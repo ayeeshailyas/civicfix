@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CivicFix — Report it. Get a formal complaint, drafted for you.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <header class="site-header">
+    <div class="wordmark">
+      <span class="wordmark-mark">CF</span>
+      <span class="wordmark-text">CivicFix</span>
+    </div>
+    <p class="tagline">Photo in. Formal complaint out.</p>
+  </header>
+
+  <main>
+    <!-- ============ HERO / UPLOAD ============ -->
+    <section class="hero" id="upload-section">
+      <div class="hero-copy">
+        <p class="eyebrow">Municipal complaint drafting</p>
+        <h1>Broken street, dead streetlight,<br> overflowing bin?</h1>
+        <p class="hero-sub">
+          Snap a photo. CivicFix reads the damage, works out how bad it is,
+          figures out which department owns the problem, and writes the
+          formal complaint letter for you — ready to submit today.
+        </p>
+      </div>
+
+      <form id="report-form" class="report-panel">
+        <label for="file-input" class="dropzone" id="dropzone">
+          <input type="file" id="file-input" name="image" accept="image/*" capture="environment" hidden />
+          <div class="dropzone-empty" id="dropzone-empty">
+            <svg class="dropzone-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 9l5-5 5 5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 4v12" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p><strong>Upload a photo</strong> or drag it here</p>
+            <p class="dropzone-hint">JPG or PNG, up to 8MB</p>
+          </div>
+          <img id="preview-img" class="preview-img" alt="Selected issue photo" hidden />
+        </label>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="location">Location / landmark <span class="optional">(optional)</span></label>
+            <input type="text" id="location" name="location" placeholder="e.g. Block C, Model Town, near Askari Park" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="description">Add details <span class="optional">(optional)</span></label>
+          <textarea id="description" name="description" rows="3" placeholder="e.g. This pothole has been here 3 weeks and two bikers have fallen already."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span id="submit-btn-label">Analyze &amp; draft complaint</span>
+        </button>
+        <p class="form-error" id="form-error" hidden></p>
+      </form>
+    </section>
+
+    <!-- ============ LOADING ============ -->
+    <section class="loading-state" id="loading-state" hidden>
+      <div class="scan-frame">
+        <div class="scan-line"></div>
+      </div>
+      <p id="loading-label">Reading the photo…</p>
+    </section>
+
+    <!-- ============ RESULT: THE TICKET ============ -->
+    <section class="ticket-wrap" id="result-section" hidden>
+
+      <article class="ticket">
+
+        <div class="ticket-top">
+          <div class="ticket-id-block">
+            <span class="ticket-eyebrow">Complaint reference</span>
+            <span class="ticket-id" id="out-complaint-id">CF-00000000-0000</span>
+          </div>
+          <div class="stamp" id="out-stamp">
+            <span id="out-severity">LOW</span>
+          </div>
+        </div>
+
+        <div class="ticket-photo-row">
+          <img id="out-photo" class="ticket-photo" alt="Reported issue" />
+          <div class="ticket-photo-meta">
+            <span class="category-chip" id="out-category">Category</span>
+            <h2 id="out-title">Issue title</h2>
+            <p class="severity-reason" id="out-severity-reason"></p>
+            <div class="tags" id="out-tags"></div>
+          </div>
+        </div>
+
+        <div class="perforation" aria-hidden="true"></div>
+
+        <div class="ticket-block">
+          <span class="block-label">Responsible department</span>
+          <p class="department-name" id="out-department">—</p>
+          <p class="department-reason" id="out-department-reason"></p>
+        </div>
+
+        <div class="perforation" aria-hidden="true"></div>
+
+        <div class="ticket-block">
+          <div class="block-header-row">
+            <span class="block-label">Draft complaint letter</span>
+            <div class="letter-actions">
+              <button type="button" class="ghost-btn" id="copy-letter-btn">Copy</button>
+              <button type="button" class="ghost-btn" id="download-letter-btn">Download .txt</button>
+            </div>
+          </div>
+          <p class="letter-subject" id="out-letter-subject"></p>
+          <div class="letter-body" id="out-letter-body"></div>
+        </div>
+
+        <div class="perforation" aria-hidden="true"></div>
+
+        <div class="ticket-block">
+          <span class="block-label">Civic action checklist</span>
+          <ul class="checklist" id="out-checklist"></ul>
+        </div>
+
+      </article>
+
+      <button type="button" class="new-report-btn" id="new-report-btn">Report another issue</button>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>CivicFix drafts your complaint with AI — please review names, addresses, and facts before you submit it to your municipal authority.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
