@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CivicFix — Generated Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="grain"></div>
+
+  <header class="site-header">
+    <a href="index.html" class="wordmark" aria-label="CivicFix home">
+      <span class="wordmark-mark">CF</span>
+      <span class="wordmark-text">CivicFix</span>
+    </a>
+    <nav class="top-nav" aria-label="Primary">
+      <a class="nav-link" href="index.html">New Report</a>
+      <a class="nav-link active" href="report.html">View Report</a>
+    </nav>
+  </header>
+
+  <main class="report-main">
+    <section class="report-head">
+      <h1>Your Complaint Report</h1>
+      <p>Review, copy, and submit this draft to the relevant municipal department.</p>
+    </section>
+
+    <section id="report-shell" hidden>
+      <article class="ticket">
+        <div class="ticket-top">
+          <div class="ticket-id-block">
+            <span class="ticket-eyebrow">Complaint reference</span>
+            <span class="ticket-id" id="out-complaint-id">CF-UNKNOWN</span>
+          </div>
+          <div class="stamp" id="out-stamp">
+            <span id="out-severity">LOW</span>
+          </div>
+        </div>
+
+        <div class="ticket-grid">
+          <img id="out-photo" class="ticket-photo" alt="Reported issue" />
+
+          <div class="ticket-meta">
+            <span class="category-chip" id="out-category">Category</span>
+            <h2 id="out-title">Issue title</h2>
+            <p class="severity-reason" id="out-severity-reason"></p>
+            <div class="tags" id="out-tags"></div>
+          </div>
+        </div>
+
+        <div class="report-split">
+          <div class="ticket-block">
+            <span class="block-label">Responsible department</span>
+            <p class="department-name" id="out-department">-</p>
+            <p class="department-reason" id="out-department-reason"></p>
+          </div>
+
+          <div class="ticket-block">
+            <span class="block-label">Action checklist</span>
+            <ul class="checklist" id="out-checklist"></ul>
+          </div>
+
+          <div class="ticket-block wide">
+            <div class="block-header-row">
+              <span class="block-label">Draft complaint letter</span>
+              <div class="letter-actions">
+                <button type="button" class="ghost-btn" id="copy-letter-btn">Copy</button>
+                <button type="button" class="ghost-btn" id="download-letter-btn">Download .txt</button>
+              </div>
+            </div>
+            <p class="letter-subject" id="out-letter-subject"></p>
+            <p class="letter-body" id="out-letter-body"></p>
+          </div>
+        </div>
+      </article>
+
+      <div class="report-actions">
+        <a class="secondary-btn" href="index.html">Create another report</a>
+        <a class="primary-btn" href="report.html">Refresh this page</a>
+      </div>
+    </section>
+
+    <section class="empty-report" id="empty-report" hidden>
+      <h2>No report yet</h2>
+      <p>Upload an issue image first, then come back here to view the generated complaint draft.</p>
+      <div class="report-actions">
+        <a class="primary-btn" href="index.html">Create new report</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>CivicFix helps draft complaints quickly. Always verify names, addresses, and factual details before submission.</p>
+    </div>
+  </footer>
+
+  <script src="report.js"></script>
+</body>
+</html>
