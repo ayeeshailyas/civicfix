@@ -26,7 +26,7 @@ app.use("/api", analyzeRouter);
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    model: process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free",
+    model: process.env.OPENROUTER_MODEL || "nvidia/nemotron-nano-12b-v2-vl:free",
   });
 });
 
