@@ -30,15 +30,16 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  zoom: 90%;
-  
-  /* Modern browser compatibility (Firefox/Safari ke liye fallback) */
-  -moz-transform: scale(0.9);
-  -moz-transform-origin: top center;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
+  /* Keep the compact 90% interface scale, while compensating its height so
+     the footer still reaches the physical bottom of the viewport. */
+  zoom: 85%;
+  min-height: 111.111vh;
+  min-height: calc(100dvh / 0.85);
   display: flex;
   flex-direction: column;
   background:
@@ -69,7 +70,7 @@ body {
 /* Keep the footer at the viewport bottom when a page has little content. */
 .page-main,
 .report-main {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
 }
 
 .site-header {
@@ -79,6 +80,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .wordmark {
@@ -111,6 +113,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 0 0 auto;
 }
 
 .nav-link {
@@ -584,8 +587,10 @@ textarea:focus {
 .report-actions {
   margin-top: 14px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* 👈 space-between ko hata kar center kar dein */
+  align-items: center;
   gap: 10px;
+  
 }
 
 .secondary-btn,
@@ -627,8 +632,9 @@ textarea:focus {
 .site-footer {
   position: relative;
   z-index: 1;
+  flex: 0 0 auto;
   width: 100%;
-  margin-top: 30px;
+  margin-top: 0;
   border-top: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.5);
 }
@@ -668,9 +674,37 @@ textarea:focus {
 
 @media (max-width: 640px) {
   .site-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    width: calc(100% - 20px);
+    padding-top: 18px;
+    padding-bottom: 10px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .wordmark {
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .wordmark-mark {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .wordmark-text {
+    font-size: 18px;
+  }
+
+  .top-nav {
+    margin-left: auto;
+    gap: 4px;
+  }
+
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 10px;
   }
 
   .pitch-card,
