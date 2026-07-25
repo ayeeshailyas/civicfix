@@ -7,7 +7,18 @@ const analyzeRouter = require("./routes/analyze");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Requests served by Vercel use the same origin. The callback also permits
+// direct browser requests from the deployed Vercel hostname when applicable.
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || /^https:\/\/[^/]+\.vercel\.app$/.test(origin)) {
+        return callback(null, true);
+      }
+      callback(null, false);
+    },
+  })
+);
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -30,9 +41,12 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Serve the frontend (plain HTML/CSS/JS) from ../frontend so the whole
-// app runs on a single port with zero CORS headaches.
-const frontendPath = path.join(__dirname, "..", "frontend");
+// Prefer Vercel's conventional public directory, while retaining the current
+// local project layout for `npm start` development.
+const publicPath = path.join(__dirname, "public");
+const frontendPath = require("fs").existsSync(publicPath)
+  ? publicPath
+  : path.join(__dirname, "..", "frontend");
 app.use(express.static(frontendPath));
 
 app.get("*", (req, res, next) => {
@@ -54,6 +68,11 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ error: "Internal Server Error" });
 });
 
-app.listen(PORT, () => {
-  console.log(`CivicFix server running at http://localhost:${PORT}`);
-});
+// Vercel imports the Express app; local development starts a listener.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`CivicFix server running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

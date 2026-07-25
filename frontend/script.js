@@ -1,5 +1,3 @@
-const API_BASE = window.location.port === "5000" ? "" : "http://localhost:5000";
-
 const fileInput = document.getElementById("file-input");
 const dropzone = document.getElementById("dropzone");
 const dropzoneEmpty = document.getElementById("dropzone-empty");
@@ -81,7 +79,7 @@ form.addEventListener("submit", async (e) => {
   setSubmitting(true);
 
   try {
-    const res = await fetch(`${API_BASE}/api/analyze`, {
+    const res = await fetch("/api/analyze", {
       method: "POST",
       body: formData,
     });
