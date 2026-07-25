@@ -71,10 +71,17 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  const location = document.getElementById("location").value.trim();
+  if (!location) {
+    showFormError("Enter the location or nearest landmark.");
+    document.getElementById("location").focus();
+    return;
+  }
+
   const formData = new FormData();
   formData.append("image", selectedFile);
   formData.append("description", document.getElementById("description").value.trim());
-  formData.append("location", document.getElementById("location").value.trim());
+  formData.append("location", location);
 
   setSubmitting(true);
 

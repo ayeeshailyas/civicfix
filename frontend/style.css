@@ -33,6 +33,9 @@ body {
 }
 
 body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background:
     radial-gradient(circle at 20% 10%, #fff7e8 0, rgba(255, 247, 232, 0) 34%),
     radial-gradient(circle at 86% 22%, #e2f0f4 0, rgba(226, 240, 244, 0) 30%),
@@ -56,6 +59,12 @@ body {
 .report-main {
   position: relative;
   z-index: 1;
+}
+
+/* Keep the footer at the viewport bottom when a page has little content. */
+.page-main,
+.report-main {
+  flex: 1 0 auto;
 }
 
 .site-header {

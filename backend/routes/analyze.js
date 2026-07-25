@@ -217,10 +217,13 @@ router.post("/analyze", upload.single("image"), async (req, res, next) => {
       return res.status(400).json({ error: "No image was uploaded." });
     }
 
+    const { description, location } = req.body;
+    if (!String(location || "").trim()) {
+      return res.status(400).json({ error: "Location or nearest landmark is required." });
+    }
+
     const base64 = req.file.buffer.toString("base64");
     const imageDataUrl = `data:${req.file.mimetype};base64,${base64}`;
-
-    const { description, location } = req.body;
 
     const analysis = await analyzeImage({ imageDataUrl, description, location });
     const normalizedAnalysis = normalizeAnalysis(analysis, { description, location });
