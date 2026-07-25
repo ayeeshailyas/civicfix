@@ -30,6 +30,11 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  zoom: 90%;
+  
+  /* Modern browser compatibility (Firefox/Safari ke liye fallback) */
+  -moz-transform: scale(0.9);
+  -moz-transform-origin: top center;
 }
 
 body {
