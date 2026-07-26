@@ -2,12 +2,9 @@
 
 > **Report it. Route it. Resolve it.**
 
-![CivicFix screen](images/before1.png)
-![CivicFix screen](images/before2.png)
-
 ## Live app
 
-**Deployment:** [Add your public Vercel URL here](https://civicfix-hazel.vercel.app/)<br>
+**Deployment:** [https://civicfix-hazel.vercel.app](https://civicfix-hazel.vercel.app)<br>
 **Repository:** [github.com/ayeeshailyas/civicfix](https://github.com/ayeeshailyas/civicfix)
 
 ## The problem
@@ -33,6 +30,10 @@ The goal is to remove administrative friction and help residents take practical 
 
 ## App Visuals
 
+| Screen 1 | Screen 2 |
+| :---: | :---: |
+| ![CivicFix initial screen](images/before1.png) | ![CivicFix alternative screen](images/before2.png) |
+
 | Upload an issue | AI-generated report |
 | --- | --- |
 | ![CivicFix photo-upload interface](images/input.png) | ![CivicFix issue analysis and complaint report](images/result.png) |
@@ -43,7 +44,7 @@ The goal is to remove administrative friction and help residents take practical 
 
 ## How it works
 
-1. The resident uploads an image and can add a location or short description.
+1. The resident uploads an image and add a location or short description(optional)
 2. The browser sends the image and notes to `POST /api/analyze` as `multipart/form-data`.
 3. The Express backend converts the image to a data URL and sends it with a purpose-built system prompt to OpenRouter.
 4. A multimodal vision model returns structured JSON containing the detected category, severity, department, reasoning, tags, complaint letter, and checklist.
