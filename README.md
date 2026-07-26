@@ -1,137 +1,211 @@
-# CivicFix — AI Municipal Complaint & Infrastructure Reporter
+# CivicFix — AI-Powered Municipal Issue Reporter
 
-Upload a photo of a broken road, an overflowing bin, or a dead streetlight.
-CivicFix classifies the severity, identifies the likely municipal department,
-drafts a formal complaint letter, and gives you a civic action checklist —
-all in one request, powered by a vision model via OpenRouter.
+> **Report it. Route it. Resolve it.**
 
-## Stack
+![CivicFix screen](images/before1.png)
+![CivicFix screen](images/before2.png)
 
-- **Backend:** Node.js + Express (single server, no separate frontend server needed)
-- **Frontend:** Plain HTML / CSS / JS — no framework, no build step
-- **AI:** OpenRouter API, using a vision-capable model (`google/gemini-2.5-flash` by default)
+## Live app
+
+**Deployment:** [Add your public Vercel URL here](https://civicfix-hazel.vercel.app/)<br>
+**Repository:** [github.com/ayeeshailyas/civicfix](https://github.com/ayeeshailyas/civicfix)
+
+## The problem
+
+Whenever people came across any problem such as a road breaks down, a water pipe bursts, or an open manhole creates a hazard, they often do not know which government department is responsible and whom to complain. Even when they do, turning an observation into a clear, formal complaint takes effort. This delay means everyday infrastructure problems can remain unreported and worsen over time.
+
+## Our solution
+
+CivicFix makes reporting a civic issue as simple as uploading a photo. Vision AI examines the uploaded image and optional citizen notes, identifies the issue, estimates the safety risk, and routes the complaint to the most relevant department. It then creates a professional English complaint letter that the user can copy or download as a text file.
+
+The goal is to remove administrative friction and help residents take practical action for safer, better-maintained communities.
+
+## Key features
+
+- Upload a photo of a public-infrastructure issue.
+- Add a location/landmark and description(optional).
+- AI Detect and classify issues such as road damage, drainage problems, water leaks, electrical hazards, sanitation issues, and public-property damage.
+- Assign a severity level: **Low**, **Medium**, **High**, or **Critical**.
+- Identify the accountable department: **Municipal Corporation**, **WASA / Water Supply**, or **Electricity / Power Department**.
+- Generate a formal, editable English complaint draft with a subject line and placeholders for personal details.
+- Provide a practical follow-up checklist and a unique complaint reference ID.
+- Copy the letter in one click or download it as a `.txt` file.
+
+## Screenshots
+
+| Upload an issue | AI-generated report |
+| --- | --- |
+| ![CivicFix photo-upload interface](images/input.png) | ![CivicFix issue analysis and complaint report](images/result.png) |
+
+| Complaint letter and recommended actions |
+| --- |
+| ![CivicFix generated complaint letter](images/result2.png) |
+
+## How it works
+
+1. The resident uploads an image and can add a location or short description.
+2. The browser sends the image and notes to `POST /api/analyze` as `multipart/form-data`.
+3. The Express backend converts the image to a data URL and sends it with a purpose-built system prompt to OpenRouter.
+4. A multimodal vision model returns structured JSON containing the detected category, severity, department, reasoning, tags, complaint letter, and checklist.
+5. CivicFix normalizes the response, creates a complaint reference ID, and displays a printable/copyable report.
+
+## AI used in this project
+
+| Area | Implementation |
+| --- | --- |
+| AI provider | [OpenRouter](https://openrouter.ai/) Chat Completions API |
+| Default vision model | `nvidia/nemotron-nano-12b-v2-vl:free` |
+| Input | Infrastructure photo plus optional location and citizen notes |
+| Output | Strict JSON: category, severity, responsible department, reasons, tags, complaint letter, and checklist |
+| Safety/quality rules | The system prompt forces a single department, formal English translation, and elevated severity for fires, sparks, live wires, and immediate hazards |
+
+The main system prompt lives in [`backend/utils/openrouter.js`](backend/utils/openrouter.js) that is: 
+`You are CivicFix AI, an expert vision & civic complaint analyzer. Your task is to analyze photos and citizen notes of public infrastructure issues, accurately classify the problem, determine its severity, and draft a formal complaint letter in professional English.
+
+==================================================
+CRITICAL CLASSIFICATION & OVERRIDE RULES
+==================================================
+
+1. DEPARTMENT CLASSIFICATION:
+   You MUST assign exactly ONE of the following departments based on the core issue:
+   - "Electricity / Power Department": Select this for ALL electrical assets, utility poles, transformers, power meters, high-voltage lines, power outages, electrical fires, or sparks.
+   - "WASA / Water Supply": Select this for water leaks, broken pipes or water mains, open manholes, sewage overflow, or drainage blockage. A broken or leaking pipe visible in the image MUST be assigned to WASA.
+   - "Municipal Corporation": Select this for roads, potholes, damaged footpaths, garbage/trash accumulation, streetlights, or public parks.
+
+2. SEVERITY LEVEL:
+   - "Critical": ANY active fire, sparks, exposed high-voltage wiring, toxic gas leaks, or immediate, severe life safety hazards.
+   - "High": Major structural damage, open deep manholes in pedestrian areas, broken power poles, or severe road blockages.
+   - "Medium": Moderate potholes, overflowing garbage, broken streetlights, or localized water leakage.
+   - "Low": Minor cosmetic damage, faded road signs, or minor littering.
+
+   *STRICT RULE*: If the photo or notes contain FIRE, SPARKS, or DANGEROUS ELECTRICAL WIRES, severity MUST be "Critical" or "High". NEVER set "Medium" or "Low" for hazardous/fire situations.
+
+3. LANGUAGE & TRANSLATION:
+   - Citizen descriptions may be provided in Roman Urdu, Hindi, Urdu, or informal slang (e.g., "transformer sar gaya hai", "kuch karo rasta band ha").
+   - You MUST translate, refine, and convert the citizen's notes into 100% formal, clear, professional English for the complaint letter body and summaries.
+   - NEVER copy-paste raw Roman Urdu or informal slang words into the final letter or summary fields.
+
+==================================================
+JSON OUTPUT REQUIREMENTS
+==================================================
+- Respond ONLY with a single valid JSON object.
+- Do NOT wrap the JSON in markdown code blocks (no \`\`\`json).
+- Do NOT include any intro, outro, or commentary.
+
+REQUIRED JSON FORMAT:
+{
+  "issue_detected": true,
+  "category": "Streetlight & Electrical" | "Road Damage" | "Garbage & Sanitation" | "Water & Drainage" | "Public Property Damage" | "Other",
+  "short_title": "5-8 word clear title in formal English describing the issue",
+  "severity": "Low" | "Medium" | "High" | "Critical",
+  "severity_reason": "1-2 concise sentences explaining why this severity was assigned, referencing specific visible damage or risk.",
+  "department": "Electricity / Power Department" | "Municipal Corporation" | "WASA / Water Supply",
+  "department_reason": "1 concise sentence stating why this department is responsible for this issue.",
+  "english_location_summary": "A short English-only context phrase combining location and issue (e.g., 'IT Park Faisalabad - Severe transformer fire hazard').",
+  "tags": ["4-6 short lowercase hyphenated tags, e.g., electrical-hazard, fire-safety, urgent"],
+  "complaint_letter": {
+    "subject": "Formal and urgent complaint subject line in English",
+    "body": "A complete, formal 3-4 paragraph complaint letter written in professional English from a resident to the department head. Translate any citizen notes into clean English. Include square bracket placeholders like [Your Name], [Contact Information], and [Date] where personal details go."
+  },
+  "checklist": [
+    "4-5 clear actionable steps the citizen should take in logical order (e.g., 'Maintain a safe distance from the hazard site', 'Submit this letter to the department helpline', 'Save the reference number')."
+  ]
+}
+
+If the image DOES NOT show any public infrastructure issue, set "issue_detected": false, but still return the valid JSON structure filling fields with honest reasonable guesses or empty values.`;
+
+ It instructs the model to classify common municipal problems, generate professional English instead of copying informal or Roman Urdu notes, and return machine-readable JSON only. The backend also has normalization and fallback logic in [`backend/routes/analyze.js`](backend/routes/analyze.js) to keep routing and severity dependable.
+
+> AI analysis is an assistive draft. Users should review the final letter, confirm facts and contact information, and follow local emergency procedures for immediate dangers.
+
+## Tech stack
+
+- **Frontend:** HTML, CSS, and vanilla JavaScript
+- **Backend:** Node.js and Express
+- **Image uploads:** Multer
+- **AI integration:** OpenRouter with a vision-capable multimodal model
+- **Deployment configuration:** Vercel (`backend/vercel.json`)
 
 ## Project structure
 
-```
+```text
 civicfix/
 ├── backend/
-│   ├── routes/analyze.js      # POST /api/analyze
-│   ├── utils/openrouter.js    # calls OpenRouter + parses the JSON response
-│   ├── server.js              # Express app entry point
-│   ├── package.json
-│   └── .env.example
-└── frontend/
-    ├── index.html
-    ├── style.css
-    └── script.js
+│   ├── routes/analyze.js       # POST /api/analyze and result normalization
+│   ├── utils/openrouter.js     # Vision-AI prompt and OpenRouter client
+│   ├── server.js               # Express API + static-file server
+│   ├── vercel.json             # Vercel server configuration
+│   └── .env.example            # Required environment variables
+├── frontend/
+│   ├── index.html              # Upload experience
+│   ├── report.html             # Generated complaint report
+│   ├── script.js / report.js   # Client-side interactions
+│   └── style.css
+└── images/                     # README screenshots
 ```
 
-The Express server serves the `frontend/` folder as static files AND the
-`/api/*` routes, so you only run **one** server on **one** port — no CORS
-setup needed.
+## Run locally
 
----
+### Prerequisites
 
-## Step-by-step setup
+- Node.js 18 or later
+- An [OpenRouter API key](https://openrouter.ai/keys) with access to a vision-capable model
 
-### 1. Install Node.js
-
-You need Node.js 18 or newer. Check with:
+### Setup
 
 ```bash
-node -v
-```
-
-If you don't have it, download it from https://nodejs.org (LTS version).
-
-### 2. Get an OpenRouter API key
-
-1. Go to https://openrouter.ai and sign up.
-2. Go to https://openrouter.ai/keys and create a key.
-3. Add a small amount of credit to your account (both Gemini 2.5 Flash and
-   Qwen VL models are very cheap per request).
-
-### 3. Install backend dependencies
-
-```bash
+git clone https://github.com/ayeeshailyas/civicfix.git
 cd civicfix/backend
 npm install
 ```
 
-### 4. Configure environment variables
+Copy the example configuration to `.env` and add your key:
 
 ```bash
-cp .env.example .env
+copy .env.example .env
 ```
 
-Open `.env` and paste your key:
-
-```
-OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxx
-OPENROUTER_MODEL=google/gemini-2.5-flash
+```env
+OPENROUTER_API_KEY=your_openrouter_key
+OPENROUTER_MODEL=nvidia/nemotron-nano-12b-v2-vl:free
 PORT=5000
 ```
 
-**Important note on the model choice:** you mentioned
-`qwen/qwen-2.5-72b-instruct` — that particular model is **text-only**, it
-cannot read images, so it won't work for this app. If you want to use Qwen,
-use the vision variant instead: `qwen/qwen2.5-vl-72b-instruct`. Both
-`google/gemini-2.5-flash` and `qwen/qwen2.5-vl-72b-instruct` work as drop-in
-replacements — just change `OPENROUTER_MODEL` in `.env`.
-
-### 5. Run the server
+Start the server:
 
 ```bash
 npm start
 ```
 
-You should see:
+Open [http://localhost:5000](http://localhost:5000). The same Express server delivers both the UI and API, so no separate frontend server or CORS setup is required for local development.
 
-```
-CivicFix server running at http://localhost:5000
-```
+## Deploy to Vercel
 
-### 6. Open the app
+1. Import this repository into Vercel and set the project root directory to `backend`.
+2. Add `OPENROUTER_API_KEY` in **Project Settings → Environment Variables**. Never commit this key.
+3. Optionally set `OPENROUTER_MODEL`, `OPENROUTER_FALLBACK_MODEL`, `OPENROUTER_SITE_URL`, and `OPENROUTER_APP_NAME`.
+4. Deploy. Vercel uses [`backend/vercel.json`](backend/vercel.json) to run the Express server, which serves the frontend and `/api/analyze` from one origin.
+5. Copy the resulting public `https://…vercel.app` URL into the **Live app** section at the top of this README.
 
-Go to **http://localhost:5000** in your browser. Upload a photo, optionally
-add a location and description, and click "Analyze & draft complaint".
+## API overview
 
----
+### `POST /api/analyze`
 
-## How it works
+Accepts multipart form data containing an issue image plus optional description and location fields. Returns a structured analysis and complaint draft.
 
-1. The browser sends the photo (+ optional notes) to `POST /api/analyze` as
-   `multipart/form-data`.
-2. The backend converts the image to a base64 data URL and sends it to
-   OpenRouter's chat completions endpoint, along with a system prompt that
-   forces the model to answer with a strict JSON object (severity, category,
-   department, complaint letter, tags, checklist).
-3. The backend generates a complaint reference ID (e.g. `CF-20260724-4821`)
-   and returns everything to the frontend.
-4. The frontend renders it as a "complaint ticket" card, with buttons to
-   copy or download the letter as a `.txt` file.
+### `GET /api/health`
 
-## Customizing
+Returns a simple JSON health status and the configured model name.
 
-- **Change the AI's tone / letter format:** edit `SYSTEM_PROMPT` in
-  `backend/utils/openrouter.js`.
-- **Add more categories/severities:** update the prompt's enum lists in the
-  same file, and add matching CSS classes (`.sev-low`, `.sev-medium`, etc.)
-  in `frontend/style.css` if you add new severity levels.
-- **Deploy:** the backend can be deployed as-is to Render, Railway, Fly.io,
-  or a VPS. Just set `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` as
-  environment variables on the host — nothing else changes since the
-  frontend is served by the same Express app.
+## Privacy and responsible use
 
-## Troubleshooting
+- Do not upload sensitive personal documents or images that are unrelated to the civic issue.
+- API keys belong only in local/deployment environment variables; `.env` is ignored by Git.
+- CivicFix helps prepare a complaint but does not submit it to an authority or guarantee a repair timeline.
 
-- **"OPENROUTER_API_KEY is missing"** — you didn't create `.env`, or forgot
-  to paste the key in it. Restart the server after editing `.env`.
-- **"OpenRouter error (401)"** — your API key is wrong or has no credit.
-- **"Could not parse a JSON object out of the model's response"** — rare,
-  happens if the model adds stray text. Try again, or switch
-  `OPENROUTER_MODEL` to the other supported model.
-- **Nothing happens on submit** — open the browser console (F12) and check
-  for errors; make sure the server is running and you're on
-  `http://localhost:5000` (not opening `index.html` directly as a file).
+## Future improvements
+
+- Direct integrations with local government complaint portals.
+- Location-aware department directories and helpline links.
+- Multilingual interface and complaint templates.
+- Status tracking after a complaint is submitted.
