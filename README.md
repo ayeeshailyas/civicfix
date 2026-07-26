@@ -2,19 +2,16 @@
 
 > **Report it. Route it. Resolve it.**
 
-![CivicFix screen](images/before1.png)
-![CivicFix screen](images/before2.png)
-
 ## Live app
 
-**Deployment:** [Add your public Vercel URL here](https://civicfix-hazel.vercel.app/)<br>
+**Deployment:** [https://civicfix-hazel.vercel.app](https://civicfix-hazel.vercel.app)<br>
 **Repository:** [github.com/ayeeshailyas/civicfix](https://github.com/ayeeshailyas/civicfix)
 
 ## The problem
 
 Whenever people came across any problem such as a road breaks down, a water pipe bursts, or an open manhole creates a hazard, they often do not know which government department is responsible and whom to complain. Even when they do, turning an observation into a clear, formal complaint takes effort. This delay means everyday infrastructure problems can remain unreported and worsen over time.
 
-## Our solution
+## The solution
 
 CivicFix makes reporting a civic issue as simple as uploading a photo. Vision AI examines the uploaded image and optional citizen notes, identifies the issue, estimates the safety risk, and routes the complaint to the most relevant department. It then creates a professional English complaint letter that the user can copy or download as a text file.
 
@@ -31,19 +28,23 @@ The goal is to remove administrative friction and help residents take practical 
 - Provide a practical follow-up checklist and a unique complaint reference ID.
 - Copy the letter in one click or download it as a `.txt` file.
 
-## Screenshots
+## App Visuals
+
+| Screen 1 | Screen 2 |
+| :---: | :---: |
+| ![CivicFix initial screen](images/before1.png) | ![CivicFix alternative screen](images/before2.png) |
 
 | Upload an issue | AI-generated report |
 | --- | --- |
 | ![CivicFix photo-upload interface](images/input.png) | ![CivicFix issue analysis and complaint report](images/result.png) |
 
-| Complaint letter and recommended actions |
+| Complaint letter |
 | --- |
 | ![CivicFix generated complaint letter](images/result2.png) |
 
 ## How it works
 
-1. The resident uploads an image and can add a location or short description.
+1. The resident uploads an image and add a location or short description(optional)
 2. The browser sends the image and notes to `POST /api/analyze` as `multipart/form-data`.
 3. The Express backend converts the image to a data URL and sends it with a purpose-built system prompt to OpenRouter.
 4. A multimodal vision model returns structured JSON containing the detected category, severity, department, reasoning, tags, complaint letter, and checklist.
@@ -55,17 +56,15 @@ The goal is to remove administrative friction and help residents take practical 
 | --- | --- |
 | AI provider | [OpenRouter](https://openrouter.ai/) Chat Completions API |
 | Default vision model | `nvidia/nemotron-nano-12b-v2-vl:free` |
-| Input | Infrastructure photo plus optional location and citizen notes |
+| Input | Infrastructure photo plus location and optional citizen notes |
 | Output | Strict JSON: category, severity, responsible department, reasons, tags, complaint letter, and checklist |
 | Safety/quality rules | The system prompt forces a single department, formal English translation, and elevated severity for fires, sparks, live wires, and immediate hazards |
 
 The main system prompt lives in [`backend/utils/openrouter.js`](backend/utils/openrouter.js) that is: 
 `You are CivicFix AI, an expert vision & civic complaint analyzer. Your task is to analyze photos and citizen notes of public infrastructure issues, accurately classify the problem, determine its severity, and draft a formal complaint letter in professional English.
 
-==================================================
-CRITICAL CLASSIFICATION & OVERRIDE RULES
-==================================================
 
+CRITICAL CLASSIFICATION & OVERRIDE RULES
 1. DEPARTMENT CLASSIFICATION:
    You MUST assign exactly ONE of the following departments based on the core issue:
    - "Electricity / Power Department": Select this for ALL electrical assets, utility poles, transformers, power meters, high-voltage lines, power outages, electrical fires, or sparks.
@@ -85,9 +84,8 @@ CRITICAL CLASSIFICATION & OVERRIDE RULES
    - You MUST translate, refine, and convert the citizen's notes into 100% formal, clear, professional English for the complaint letter body and summaries.
    - NEVER copy-paste raw Roman Urdu or informal slang words into the final letter or summary fields.
 
-==================================================
+
 JSON OUTPUT REQUIREMENTS
-==================================================
 - Respond ONLY with a single valid JSON object.
 - Do NOT wrap the JSON in markdown code blocks (no \`\`\`json).
 - Do NOT include any intro, outro, or commentary.
@@ -202,10 +200,3 @@ Returns a simple JSON health status and the configured model name.
 - Do not upload sensitive personal documents or images that are unrelated to the civic issue.
 - API keys belong only in local/deployment environment variables; `.env` is ignored by Git.
 - CivicFix helps prepare a complaint but does not submit it to an authority or guarantee a repair timeline.
-
-## Future improvements
-
-- Direct integrations with local government complaint portals.
-- Location-aware department directories and helpline links.
-- Multilingual interface and complaint templates.
-- Status tracking after a complaint is submitted.
