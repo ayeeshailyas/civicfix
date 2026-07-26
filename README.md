@@ -11,7 +11,7 @@
 
 Whenever people came across any problem such as a road breaks down, a water pipe bursts, or an open manhole creates a hazard, they often do not know which government department is responsible and whom to complain. Even when they do, turning an observation into a clear, formal complaint takes effort. This delay means everyday infrastructure problems can remain unreported and worsen over time.
 
-## Our solution
+## The solution
 
 CivicFix makes reporting a civic issue as simple as uploading a photo. Vision AI examines the uploaded image and optional citizen notes, identifies the issue, estimates the safety risk, and routes the complaint to the most relevant department. It then creates a professional English complaint letter that the user can copy or download as a text file.
 
