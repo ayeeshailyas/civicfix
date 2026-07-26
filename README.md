@@ -31,13 +31,13 @@ The goal is to remove administrative friction and help residents take practical 
 - Provide a practical follow-up checklist and a unique complaint reference ID.
 - Copy the letter in one click or download it as a `.txt` file.
 
-## Screenshots
+## App Visuals
 
 | Upload an issue | AI-generated report |
 | --- | --- |
 | ![CivicFix photo-upload interface](images/input.png) | ![CivicFix issue analysis and complaint report](images/result.png) |
 
-| Complaint letter and recommended actions |
+| Complaint letter |
 | --- |
 | ![CivicFix generated complaint letter](images/result2.png) |
 
@@ -55,17 +55,15 @@ The goal is to remove administrative friction and help residents take practical 
 | --- | --- |
 | AI provider | [OpenRouter](https://openrouter.ai/) Chat Completions API |
 | Default vision model | `nvidia/nemotron-nano-12b-v2-vl:free` |
-| Input | Infrastructure photo plus optional location and citizen notes |
+| Input | Infrastructure photo plus location and optional citizen notes |
 | Output | Strict JSON: category, severity, responsible department, reasons, tags, complaint letter, and checklist |
 | Safety/quality rules | The system prompt forces a single department, formal English translation, and elevated severity for fires, sparks, live wires, and immediate hazards |
 
 The main system prompt lives in [`backend/utils/openrouter.js`](backend/utils/openrouter.js) that is: 
 `You are CivicFix AI, an expert vision & civic complaint analyzer. Your task is to analyze photos and citizen notes of public infrastructure issues, accurately classify the problem, determine its severity, and draft a formal complaint letter in professional English.
 
-==================================================
-CRITICAL CLASSIFICATION & OVERRIDE RULES
-==================================================
 
+CRITICAL CLASSIFICATION & OVERRIDE RULES
 1. DEPARTMENT CLASSIFICATION:
    You MUST assign exactly ONE of the following departments based on the core issue:
    - "Electricity / Power Department": Select this for ALL electrical assets, utility poles, transformers, power meters, high-voltage lines, power outages, electrical fires, or sparks.
@@ -85,9 +83,8 @@ CRITICAL CLASSIFICATION & OVERRIDE RULES
    - You MUST translate, refine, and convert the citizen's notes into 100% formal, clear, professional English for the complaint letter body and summaries.
    - NEVER copy-paste raw Roman Urdu or informal slang words into the final letter or summary fields.
 
-==================================================
+
 JSON OUTPUT REQUIREMENTS
-==================================================
 - Respond ONLY with a single valid JSON object.
 - Do NOT wrap the JSON in markdown code blocks (no \`\`\`json).
 - Do NOT include any intro, outro, or commentary.
